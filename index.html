@@ -263,4 +263,256 @@ function updateEditor() {
     const frames = Object.keys(selectedEntity.keyframes).map(Number).sort((a,b)=>a-b);
     frames.forEach((f, idx) => {
         html += `
-            <div class
+            <div class="kf-row">
+                <span style="font-size:13px; color:#34495e;">Point ${idx+1}:</span>
+                <input type="number" class="kf-input" data-old="${f}" value="${f}" min="0" max="${maxFrames}">
+                <button class="btnDeleteKf" data-f="${f}">삭제</button>
+            </div>
+        `;
+    });
+    kfList.innerHTML = html + `</div>`;
+
+    // 프레임 숫자 직접 수정 이벤트
+    document.querySelectorAll('.kf-input').forEach(inp => {
+        inp.addEventListener('change', (e) => {
+            const oldF = parseInt(e.target.getAttribute('data-old'));
+            let newF = parseInt(e.target.value);
+            
+            if(newF < 0) newF = 0; 
+            if(newF > maxFrames) newF = maxFrames;
+            
+            // 중복 프레임 방지
+            while(selectedEntity.keyframes[newF] && newF !== oldF) newF++; 
+            
+            const pos = selectedEntity.keyframes[oldF];
+            delete selectedEntity.keyframes[oldF];
+            selectedEntity.keyframes[newF] = pos;
+            
+            updateEditor(); 
+            render();
+        });
+    });
+
+    // 개별 키프레임 삭제 이벤트
+    document.querySelectorAll('.btnDeleteKf').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const f = parseInt(e.target.getAttribute('data-f'));
+            delete selectedEntity.keyframes[f];
+            
+            // 모든 키프레임이 지워지면 객체 자체 삭제
+            if(Object.keys(selectedEntity.keyframes).length === 0) {
+                entities = entities.filter(en => en !== selectedEntity); 
+                selectedEntity = null;
+            }
+            updateEditor(); 
+            render();
+        });
+    });
+
+    // 등속도 자동 맞춤 이벤트
+    const autoBtn = document.getElementById('btnAutoSpeed');
+    if(autoBtn) {
+        autoBtn.addEventListener('click', () => { applyConstantSpeed(selectedEntity); });
+    }
+}
+
+// 📌 핵심: 등속도 보정 알고리즘
+function applyConstantSpeed(entity) {
+    const frames = Object.keys(entity.keyframes).map(Number).sort((a,b)=>a-b);
+    if(frames.length < 3) return; // 중간 보정을 위해 최소 3개의 점이 필요함
+    
+    const firstF = frames[0];
+    const lastF = frames[frames.length-1];
+    const totalFrames = lastF - firstF; // 할당된 총 프레임(시간)
+    
+    let totalDist = 0; 
+    const dists = [];
+    
+    // 구간별 거리 계산
+    for(let i=0; i<frames.length-1; i++) {
+        const d = Math.hypot(
+            entity.keyframes[frames[i+1]].x - entity.keyframes[frames[i]].x, 
+            entity.keyframes[frames[i+1]].y - entity.keyframes[frames[i]].y
+        );
+        dists.push(d); 
+        totalDist += d;
+    }
+    
+    if(totalDist === 0) return;
+    
+    const newKf = { [firstF]: entity.keyframes[firstF] };
+    let accum = firstF;
+    
+    // 거리 비율에 맞춰 중간 프레임 재할당
+    for(let i=0; i<frames.length-2; i++) {
+        accum += (dists[i] / totalDist) * totalFrames;
+        let newF = Math.round(accum);
+        while(newKf[newF]) newF++; // 겹침 방지
+        newKf[newF] = entity.keyframes[frames[i+1]];
+    }
+    newKf[lastF] = entity.keyframes[lastF]; // 마지막 지점 확정
+    
+    entity.keyframes = newKf; 
+    updateEditor(); 
+    render();
+}
+
+// 마우스 및 캔버스 인터랙션
+canvas.addEventListener('mousedown', (e) => {
+    if (isPlaying) return;
+    const rect = canvas.getBoundingClientRect(); 
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    let hit = null;
+    for (let entity of entities) {
+        const pos = getInterpolatedPos(entity, currentFrame);
+        if (pos && Math.hypot(pos.x - x, pos.y - y) <= (entity.isBall ? 7 : 14) + 6) { 
+            hit = entity; break; 
+        }
+    }
+    
+    if (hit) { 
+        draggedEntity = hit; 
+        selectedEntity = hit; 
+        canvas.style.cursor = 'grabbing'; 
+        updateEditor(); 
+        render(); 
+        return; 
+    }
+    
+    // 빈 곳 클릭 시 새 객체 배치
+    const selectedType = document.querySelector('input[name="type"]:checked').value;
+    const isBall = selectedType === 'ball';
+    
+    const newEntity = { 
+        isBall: isBall, type: selectedType, 
+        number: isBall ? null : numInput.value, 
+        keyframes: { [currentFrame]: { x, y } } 
+    };
+    
+    if (!isBall) numInput.value = parseInt(numInput.value) + 1;
+    entities.push(newEntity); 
+    selectedEntity = newEntity; 
+    updateEditor(); 
+    render();
+});
+
+canvas.addEventListener('mousemove', (e) => {
+    if (isPlaying) return;
+    const rect = canvas.getBoundingClientRect(); 
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    if (draggedEntity) { 
+        draggedEntity.keyframes[currentFrame] = { x, y }; 
+        updateEditor(); 
+        render(); 
+    } else { 
+        canvas.style.cursor = 'default'; 
+    }
+});
+
+canvas.addEventListener('mouseup', () => { 
+    draggedEntity = null; 
+    if (!isPlaying) canvas.style.cursor = 'default'; 
+});
+
+timeline.addEventListener('input', (e) => { 
+    if (isPlaying) return; 
+    currentFrame = parseInt(e.target.value); 
+    frameDisplay.textContent = currentFrame; 
+    render(); 
+});
+
+// 애니메이션 실행 
+function advanceFrame() {
+    if (!isPlaying) return;
+    if (currentFrame < maxFrames) {
+        currentFrame++; 
+        timeline.value = currentFrame; 
+        frameDisplay.textContent = currentFrame;
+        render(); 
+        animationTimer = setTimeout(advanceFrame, 20); 
+    } else { 
+        isPlaying = false; 
+        playBtn.textContent = "▶ 재생 (Play)"; 
+    }
+}
+
+playBtn.addEventListener('click', () => {
+    if (isPlaying) { 
+        isPlaying = false; 
+        clearTimeout(animationTimer); 
+        playBtn.textContent = "▶ 재생 (Play)"; 
+    } else { 
+        isPlaying = true; 
+        if (currentFrame >= maxFrames) currentFrame = 0; 
+        selectedEntity = null; // 재생 중 에디터 선택 해제
+        updateEditor(); 
+        playBtn.textContent = "⏸ 일시정지"; 
+        advanceFrame(); 
+    }
+});
+
+resetBtn.addEventListener('click', () => {
+    isPlaying = false; 
+    clearTimeout(animationTimer); 
+    playBtn.textContent = "▶ 재생 (Play)";
+    entities = []; 
+    selectedEntity = null; 
+    currentFrame = 0; 
+    timeline.value = 0; 
+    frameDisplay.textContent = 0; 
+    numInput.value = 1; 
+    updateEditor(); 
+    render();
+});
+
+// GIF 인코딩 
+exportBtn.addEventListener('click', () => {
+    if (isPlaying) playBtn.click();
+    
+    exportBtn.textContent = "⏳ 움짤 생성 중..."; 
+    exportBtn.disabled = true; 
+    selectedEntity = null; 
+    updateEditor();
+    
+    const workerBlob = new Blob([`importScripts('https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js');`], { type: 'application/javascript' });
+    const gif = new window.GIF({ 
+        workers: 2, quality: 10, 
+        width: canvas.width, height: canvas.height, 
+        workerScript: URL.createObjectURL(workerBlob) 
+    });
+    
+    const savedFrame = currentFrame; 
+    for (let f = 0; f <= maxFrames; f += 2) { 
+        currentFrame = f; 
+        render(true); // 경로/선택표시 숨김
+        gif.addFrame(canvas, { copy: true, delay: 40 }); 
+    }
+    
+    gif.on('finished', function(blob) {
+        const a = document.createElement('a'); 
+        a.href = URL.createObjectURL(blob); 
+        a.download = 'football_tactics.gif'; 
+        document.body.appendChild(a); 
+        a.click(); 
+        document.body.removeChild(a);
+        
+        currentFrame = savedFrame; 
+        render(); 
+        exportBtn.textContent = "📷 GIF 추출"; 
+        exportBtn.disabled = false;
+    });
+    
+    gif.render();
+});
+
+// 초기화 호출
+render();
+updateEditor();
+</script>
+
+</body>
+</html>
