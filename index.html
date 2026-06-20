@@ -5,33 +5,17 @@
     <title>2D 축구 전술 하이라이트 메이커 (Pro)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
     <style>
-        body {
-            font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
-            margin: 20px;
-            background: #f4f6f9;
-            user-select: none;
-            color: #333;
-        }
+        body { font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; margin: 20px; background: #f4f6f9; user-select: none; color: #333; }
         h1 { text-align: center; font-size: 24px; margin-bottom: 20px; color: #2c3e50; }
-        
-        #controls, #editor-panel {
-            max-width: 950px; margin: 0 auto 15px auto; background: white; padding: 15px 20px;
-            border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
+        #controls, #editor-panel { max-width: 950px; margin: 0 auto 15px auto; background: white; padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         #controls { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
         .control-group { display: flex; align-items: center; gap: 8px; }
-        
         label { font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px; }
-        input[type="number"] { width: 50px; padding: 6px; border: 1px solid #ccd1d9; border-radius: 4px; text-align: center; font-weight: bold;}
+        input[type="number"] { width: 50px; padding: 6px; border: 1px solid #ccd1d9; border-radius: 4px; text-align: center; font-weight: bold; }
         input[type="color"] { width: 30px; height: 30px; padding: 0; border: none; border-radius: 4px; cursor: pointer; }
         select { padding: 6px; border-radius: 4px; border: 1px solid #ccd1d9; font-weight: bold; }
-        
-        button {
-            padding: 8px 16px; font-weight: bold; border: none; border-radius: 4px;
-            cursor: pointer; transition: 0.2s;
-        }
+        button { padding: 8px 16px; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; transition: 0.2s; }
         button:active { transform: scale(0.98); }
-        
         #playBtn { background: #2ecc71; color: white; }
         #playBtn:hover { background: #27ae60; }
         #resetBtn { background: #e74c3c; color: white; }
@@ -41,20 +25,11 @@
         #exportBtn:disabled { background: #bdc3c7; cursor: not-allowed; }
         #btnFormation { background: #8e44ad; color: white; }
         #btnFormation:hover { background: #9b59b6; }
-        
-        .timeline-container {
-            display: flex; align-items: center; gap: 10px; margin-left: auto;
-            background: #edf1f5; padding: 6px 18px; border-radius: 20px;
-        }
+        .timeline-container { display: flex; align-items: center; gap: 10px; margin-left: auto; background: #edf1f5; padding: 6px 18px; border-radius: 20px; }
         input[type="range"] { width: 200px; cursor: pointer; }
         #frameDisplay { font-weight: bold; color: #2c3e50; min-width: 28px; text-align: right; }
-        
         #pitch-wrapper { text-align: center; }
-        canvas {
-            background: #27ae60; display: inline-block; border-radius: 8px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15); cursor: default;
-        }
-        
+        canvas { background: #27ae60; display: inline-block; border-radius: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); cursor: default; }
         .kf-row { display: flex; gap: 10px; align-items: center; background: #f8f9fa; padding: 8px 12px; border-radius: 6px; border: 1px solid #e9ecef; margin-bottom: 8px; }
         .kf-input { width: 60px !important; font-weight: bold; color: #d35400; }
         .btnDeleteKf { background: #e74c3c; color: white; padding: 4px 8px; font-size: 12px; border-radius: 4px; }
@@ -73,22 +48,17 @@
 <div id="controls">
     <button id="btnFormation">🏟 4-4-2 기본진영 배치</button>
     <div style="border-left: 2px solid #ccc; height: 20px; margin: 0 5px;"></div>
-    
     <div class="control-group">
         <input type="color" id="homeColorInput" value="#e74c3c">
         <label><input type="radio" name="type" value="home" checked> 홈</label>
-        
         <input type="color" id="awayColorInput" value="#3498db" style="margin-left: 8px;">
         <label><input type="radio" name="type" value="away"> 어웨이</label>
-        
         <label style="margin-left: 15px;"><input type="radio" name="type" value="ball"> ◯ 공</label>
     </div>
-    
     <div class="control-group" style="margin-left: 10px;">
         <label for="numInput">등번호:</label>
         <input type="number" id="numInput" value="1" min="1" max="99">
     </div>
-    
     <div class="control-group" style="margin-left: auto;">
         <label style="color: #7f8c8d; cursor: pointer; font-size: 14px;">
             <input type="checkbox" id="cleanView"> 👁️ 선 숨기기 (클린뷰)
@@ -99,13 +69,11 @@
 
 <div id="controls" style="padding-top: 10px; padding-bottom: 10px;">
     <button id="playBtn">▶ 재생 (Play)</button>
-    
     <select id="speedSelect" style="margin-left: 10px;">
         <option value="2">0.5x 배속 (느리게)</option>
         <option value="1" selected>1.0x 배속 (정상)</option>
         <option value="0.5">2.0x 배속 (빠르게)</option>
     </select>
-    
     <div class="timeline-container">
         <span class="badge">단축키: ← / →</span>
         <strong>타임라인:</strong>
@@ -116,4 +84,284 @@
 </div>
 
 <div id="pitch-wrapper">
-    <canvas id="pitch" width
+    <canvas id="pitch" width="800" height="500"></canvas>
+</div>
+
+<div id="editor-panel">
+    <h3 style="margin-top:0; font-size:16px; color:#2c3e50;">⏱ 타임라인 상세 편집기</h3>
+    <div id="kf-list"><span style="color:#7f8c8d; font-size:14px;">경기장 위의 객체(선수 또는 공)를 클릭하면, 경로를 되돌리거나 등속도로 자동 정렬할 수 있습니다.</span></div>
+</div>
+
+<script>
+const canvas = document.getElementById('pitch');
+const ctx = canvas.getContext('2d');
+const playBtn = document.getElementById('playBtn');
+const resetBtn = document.getElementById('resetBtn');
+const exportBtn = document.getElementById('exportBtn');
+const btnFormation = document.getElementById('btnFormation');
+const timeline = document.getElementById('timeline');
+const frameDisplay = document.getElementById('frameDisplay');
+const numInput = document.getElementById('numInput');
+const homeColorInput = document.getElementById('homeColorInput');
+const awayColorInput = document.getElementById('awayColorInput');
+const speedSelect = document.getElementById('speedSelect');
+const cleanView = document.getElementById('cleanView');
+const kfList = document.getElementById('kf-list');
+
+let entities = [];
+let isPlaying = false;
+let maxFrames = 200;
+let currentFrame = 0;
+let draggedEntity = null;
+let selectedEntity = null;
+let animationTimer = null;
+
+homeColorInput.addEventListener('input', () => render(false));
+awayColorInput.addEventListener('input', () => render(false));
+cleanView.addEventListener('change', () => render(false));
+speedSelect.addEventListener('change', () => render(false));
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') {
+        currentFrame = Math.max(0, currentFrame - 1);
+        timeline.value = currentFrame; frameDisplay.textContent = currentFrame; render();
+    } else if (e.key === 'ArrowRight') {
+        currentFrame = Math.min(maxFrames, currentFrame + 1);
+        timeline.value = currentFrame; frameDisplay.textContent = currentFrame; render();
+    }
+});
+
+// 질문자님이 작성하셨던 디테일한 축구장 라인 드로잉 복구 완료
+function drawPitch() {
+    ctx.fillStyle = "#27ae60";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#2ecc71";
+    for(let i = 40; i < 720; i += 80) ctx.fillRect(i, 20, 40, 460);
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.7)";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(40, 20, 720, 460);
+    ctx.beginPath(); ctx.moveTo(400, 20); ctx.lineTo(400, 480); ctx.stroke();
+    ctx.beginPath(); ctx.arc(400, 250, 70, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath(); ctx.arc(400, 250, 4, 0, Math.PI * 2); ctx.fillStyle = "white"; ctx.fill();
+    ctx.strokeRect(40, 100, 120, 300);
+    ctx.strokeRect(640, 100, 120, 300);
+    ctx.strokeRect(40, 180, 40, 140);
+    ctx.strokeRect(720, 180, 40, 140);
+    ctx.beginPath(); ctx.arc(130, 250, 3, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(670, 250, 3, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(130, 250, 70, -0.9, 0.9); ctx.stroke();
+    ctx.beginPath(); ctx.arc(670, 250, 70, Math.PI - 0.9, Math.PI + 0.9); ctx.stroke();
+    ctx.fillStyle = "rgba(255,255,255,0.2)";
+    ctx.fillRect(10, 210, 30, 80); ctx.fillRect(760, 210, 30, 80);
+    ctx.strokeRect(10, 210, 30, 80); ctx.strokeRect(760, 210, 30, 80);
+}
+
+function getInterpolatedPos(entity, frame) {
+    const keyframes = Object.keys(entity.keyframes).map(Number).sort((a,b)=>a-b);
+    if (keyframes.length === 0) return null;
+    if (frame <= keyframes[0]) return entity.keyframes[keyframes[0]];
+    if (frame >= keyframes[keyframes.length - 1]) return entity.keyframes[keyframes[keyframes.length - 1]];
+    let f1 = keyframes[0], f2 = keyframes[keyframes.length - 1];
+    for (let f of keyframes) { if (f <= frame) f1 = f; if (f >= frame) { f2 = f; break; } }
+    if (f1 === f2) return entity.keyframes[f1];
+    const p1 = entity.keyframes[f1], p2 = entity.keyframes[f2];
+    const ratio = (frame - f1) / (f2 - f1);
+    return { x: p1.x + (p2.x - p1.x) * ratio, y: p1.y + (p2.y - p1.y) * ratio };
+}
+
+// 질문자님이 작성하셨던 디테일한 객체 렌더링 로직 복구 완료
+function render(hidePaths = false) {
+    drawPitch();
+    const isClean = hidePaths || cleanView.checked;
+    
+    if (!isClean) {
+        entities.forEach(entity => {
+            const keyframes = Object.keys(entity.keyframes).map(Number).sort((a,b)=>a-b);
+            if (keyframes.length > 1) {
+                ctx.beginPath();
+                ctx.strokeStyle = entity.isBall ? "rgba(255,255,255,0.5)" : "rgba(241,196,15,0.6)";
+                ctx.setLineDash(entity.isBall ? [] : [5, 5]);
+                ctx.lineWidth = entity.isBall ? 1.5 : 2;
+                const firstPos = entity.keyframes[keyframes[0]];
+                ctx.moveTo(firstPos.x, firstPos.y);
+                for (let i = 1; i < keyframes.length; i++) {
+                    ctx.lineTo(entity.keyframes[keyframes[i]].x, entity.keyframes[keyframes[i]].y);
+                }
+                ctx.stroke(); ctx.setLineDash([]); 
+                if (entity === selectedEntity) {
+                    for (let i = 0; i < keyframes.length; i++) {
+                        ctx.beginPath(); 
+                        ctx.arc(entity.keyframes[keyframes[i]].x, entity.keyframes[keyframes[i]].y, 4, 0, Math.PI*2);
+                        ctx.fillStyle = "#e67e22"; ctx.fill(); 
+                        ctx.strokeStyle = "white"; ctx.lineWidth = 1; ctx.stroke();
+                    }
+                }
+            }
+        });
+    }
+    
+    entities.forEach(entity => {
+        const pos = getInterpolatedPos(entity, currentFrame);
+        if (!pos) return;
+        if (entity === selectedEntity && !isClean) {
+            ctx.beginPath(); 
+            ctx.arc(pos.x, pos.y, entity.isBall ? 11 : 18, 0, Math.PI * 2);
+            ctx.strokeStyle = "#f1c40f"; ctx.lineWidth = 2; ctx.setLineDash([4, 4]); 
+            ctx.stroke(); ctx.setLineDash([]);
+        }
+        ctx.beginPath();
+        if (entity.isBall) {
+            ctx.arc(pos.x, pos.y, 7, 0, Math.PI * 2);
+            ctx.fillStyle = "white"; ctx.fill();
+            ctx.strokeStyle = "#333"; ctx.lineWidth = 1.5; ctx.stroke();
+            ctx.beginPath(); ctx.arc(pos.x, pos.y, 2, 0, Math.PI * 2);
+            ctx.fillStyle = "#333"; ctx.fill();
+        } else {
+            ctx.arc(pos.x, pos.y, 14, 0, Math.PI * 2);
+            ctx.fillStyle = entity.type === 'home' ? homeColorInput.value : awayColorInput.value;
+            ctx.fill();
+            ctx.strokeStyle = "white"; ctx.lineWidth = 2.5; ctx.stroke();
+            ctx.fillStyle = "white"; ctx.font = "bold 12px Helvetica, Arial";
+            ctx.textAlign = "center"; ctx.textBaseline = "middle";
+            ctx.fillText(entity.number, pos.x, pos.y);
+        }
+    });
+}
+
+function updateEditor() {
+    if(!selectedEntity) {
+        kfList.innerHTML = '<span style="color:#7f8c8d; font-size:14px;">경기장 위의 객체(선수 또는 공)를 클릭하면, 경로를 되돌리거나 등속도로 자동 정렬할 수 있습니다.</span>';
+        return;
+    }
+    const name = selectedEntity.isBall ? '⚽ 공' : (selectedEntity.type === 'home' ? '🔴 홈팀' : '🔵 어웨이팀') + ' #' + selectedEntity.number;
+    let html = `
+        <div style="width:100%; margin-bottom:12px; display:flex; align-items:center;">
+            <strong>선택됨: ${name}</strong>
+            <button id="btnUndo" style="margin-left:20px;">↩ 최근 경로 취소 (Undo)</button>
+            <button id="btnAutoSpeed" style="margin-left:10px;">✨ 구간 등속도 자동 맞춤</button>
+        </div><div style="display:flex; flex-wrap:wrap; gap:10px;">
+    `;
+    const frames = Object.keys(selectedEntity.keyframes).map(Number).sort((a,b)=>a-b);
+    frames.forEach((f, idx) => {
+        html += `<div class="kf-row"><span style="font-size:13px; color:#34495e;">Point ${idx+1}:</span><input type="number" class="kf-input" data-old="${f}" value="${f}" min="0" max="${maxFrames}"><button class="btnDeleteKf" data-f="${f}">X</button></div>`;
+    });
+    kfList.innerHTML = html + `</div>`;
+
+    document.querySelectorAll('.kf-input').forEach(inp => {
+        inp.addEventListener('change', (e) => {
+            const oldF = parseInt(e.target.getAttribute('data-old')); let newF = parseInt(e.target.value);
+            if(newF < 0) newF = 0; if(newF > maxFrames) newF = maxFrames;
+            while(selectedEntity.keyframes[newF] && newF !== oldF) newF++; 
+            const pos = selectedEntity.keyframes[oldF]; delete selectedEntity.keyframes[oldF];
+            selectedEntity.keyframes[newF] = pos; updateEditor(); render();
+        });
+    });
+
+    document.querySelectorAll('.btnDeleteKf').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            delete selectedEntity.keyframes[parseInt(e.target.getAttribute('data-f'))];
+            if(Object.keys(selectedEntity.keyframes).length === 0) { entities = entities.filter(en => en !== selectedEntity); selectedEntity = null; }
+            updateEditor(); render();
+        });
+    });
+
+    document.getElementById('btnUndo').addEventListener('click', () => {
+        const keys = Object.keys(selectedEntity.keyframes).map(Number).sort((a,b)=>a-b);
+        if(keys.length > 1) { delete selectedEntity.keyframes[keys[keys.length-1]]; updateEditor(); render(); }
+    });
+
+    document.getElementById('btnAutoSpeed').addEventListener('click', () => {
+        const frames = Object.keys(selectedEntity.keyframes).map(Number).sort((a,b)=>a-b);
+        if(frames.length < 3) return; 
+        const firstF = frames[0], lastF = frames[frames.length-1], totalFrames = lastF - firstF;
+        let totalDist = 0, dists = [];
+        for(let i=0; i<frames.length-1; i++) {
+            const d = Math.hypot(selectedEntity.keyframes[frames[i+1]].x - selectedEntity.keyframes[frames[i]].x, selectedEntity.keyframes[frames[i+1]].y - selectedEntity.keyframes[frames[i]].y);
+            dists.push(d); totalDist += d;
+        }
+        if(totalDist === 0) return;
+        const newKf = { [firstF]: selectedEntity.keyframes[firstF] }; let accum = firstF;
+        for(let i=0; i<frames.length-2; i++) {
+            accum += (dists[i] / totalDist) * totalFrames; let newF = Math.round(accum);
+            while(newKf[newF]) newF++; newKf[newF] = selectedEntity.keyframes[frames[i+1]];
+        }
+        newKf[lastF] = selectedEntity.keyframes[lastF]; selectedEntity.keyframes = newKf; updateEditor(); render();
+    });
+}
+
+btnFormation.addEventListener('click', () => {
+    entities = []; currentFrame = 0; timeline.value = 0; frameDisplay.textContent = 0; selectedEntity = null;
+    const homePos = [[80,250],[160,100],[160,200],[160,300],[160,400],[280,100],[280,200],[280,300],[280,400],[360,180],[360,320]];
+    const awayPos = [[720,250],[640,100],[640,200],[640,300],[640,400],[520,100],[520,200],[520,300],[520,400],[440,180],[440,320]];
+    homePos.forEach((p, i) => entities.push({ isBall: false, type: 'home', number: i+1, keyframes: { 0: { x: p[0], y: p[1] } } }));
+    awayPos.forEach((p, i) => entities.push({ isBall: false, type: 'away', number: i+1, keyframes: { 0: { x: p[0], y: p[1] } } }));
+    entities.push({ isBall: true, type: 'ball', number: '', keyframes: { 0: { x: 400, y: 250 } } });
+    updateEditor(); render();
+});
+
+canvas.addEventListener('mousedown', (e) => {
+    if (isPlaying) return;
+    const rect = canvas.getBoundingClientRect(); const x = e.clientX - rect.left, y = e.clientY - rect.top;
+    let hit = null;
+    for (let entity of entities) {
+        const pos = getInterpolatedPos(entity, currentFrame);
+        if (pos && Math.hypot(pos.x - x, pos.y - y) <= (entity.isBall ? 7 : 14) + 6) { hit = entity; break; }
+    }
+    if (hit) { draggedEntity = hit; selectedEntity = hit; canvas.style.cursor = 'grabbing'; updateEditor(); render(); return; }
+    const selectedType = document.querySelector('input[name="type"]:checked').value;
+    const isBall = selectedType === 'ball';
+    const newEntity = { isBall: isBall, type: selectedType, number: isBall ? null : numInput.value, keyframes: { [currentFrame]: { x, y } } };
+    if (!isBall) numInput.value = parseInt(numInput.value) + 1;
+    entities.push(newEntity); selectedEntity = newEntity; updateEditor(); render();
+});
+
+canvas.addEventListener('mousemove', (e) => {
+    if (isPlaying) return;
+    const rect = canvas.getBoundingClientRect(); const x = e.clientX - rect.left, y = e.clientY - rect.top;
+    if (draggedEntity) { draggedEntity.keyframes[currentFrame] = { x, y }; updateEditor(); render(); } 
+    else { canvas.style.cursor = 'default'; }
+});
+
+canvas.addEventListener('mouseup', () => { draggedEntity = null; if (!isPlaying) canvas.style.cursor = 'default'; });
+timeline.addEventListener('input', (e) => { if (isPlaying) return; currentFrame = parseInt(e.target.value); frameDisplay.textContent = currentFrame; render(); });
+
+function advanceFrame() {
+    if (!isPlaying) return;
+    if (currentFrame < maxFrames) {
+        currentFrame++; timeline.value = currentFrame; frameDisplay.textContent = currentFrame; render();
+        animationTimer = setTimeout(advanceFrame, 20 * parseFloat(speedSelect.value)); 
+    } else { isPlaying = false; playBtn.textContent = "▶ 재생 (Play)"; }
+}
+
+playBtn.addEventListener('click', () => {
+    if (isPlaying) { isPlaying = false; clearTimeout(animationTimer); playBtn.textContent = "▶ 재생 (Play)"; } 
+    else { isPlaying = true; if (currentFrame >= maxFrames) currentFrame = 0; selectedEntity = null; updateEditor(); playBtn.textContent = "⏸ 일시정지"; advanceFrame(); }
+});
+
+resetBtn.addEventListener('click', () => {
+    isPlaying = false; clearTimeout(animationTimer); playBtn.textContent = "▶ 재생 (Play)";
+    entities = []; selectedEntity = null; currentFrame = 0; timeline.value = 0; frameDisplay.textContent = 0; numInput.value = 1; updateEditor(); render();
+});
+
+exportBtn.addEventListener('click', () => {
+    if (isPlaying) playBtn.click();
+    exportBtn.textContent = "⏳ 움짤 생성 중..."; exportBtn.disabled = true; selectedEntity = null; updateEditor();
+    const workerBlob = new Blob([`importScripts('https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js');`], { type: 'application/javascript' });
+    const gif = new window.GIF({ workers: 2, quality: 10, width: canvas.width, height: canvas.height, workerScript: URL.createObjectURL(workerBlob) });
+    const savedFrame = currentFrame; 
+    for (let f = 0; f <= maxFrames; f += 2) { currentFrame = f; render(true); gif.addFrame(canvas, { copy: true, delay: 40 }); }
+    
+    gif.on('progress', function(p) { exportBtn.textContent = `⏳ 렌더링... ${Math.round(p * 100)}%`; });
+    gif.on('finished', function(blob) {
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'goal_clip.gif'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        currentFrame = savedFrame; render(); exportBtn.textContent = "📷 GIF 추출"; exportBtn.disabled = false;
+    });
+    gif.render();
+});
+
+render();
+updateEditor();
+</script>
+
+</body>
+</html>
