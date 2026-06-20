@@ -5,28 +5,27 @@
     <title>2D 축구 전술 하이라이트 메이커 (Pro)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
     <style>
-        body {
-            font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
-            margin: 20px;
-            background: #f4f6f9;
-            user-select: none;
-            color: #333;
+        body { 
+            font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; 
+            margin: 20px; 
+            background: #f4f6f9; 
+            user-select: none; 
+            color: #333; 
         }
         h1 { text-align: center; font-size: 24px; margin-bottom: 20px; color: #2c3e50; }
-        #controls {
-            max-width: 950px; margin: 0 auto 15px auto; display: flex; align-items: center;
-            gap: 15px; background: white; padding: 15px 20px; border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05); flex-wrap: wrap;
+        
+        /* 상단 컨트롤 패널 */
+        #controls { 
+            max-width: 950px; margin: 0 auto 15px auto; display: flex; align-items: center; 
+            gap: 15px; background: white; padding: 15px 20px; border-radius: 8px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); flex-wrap: wrap; 
         }
         .control-group { display: flex; align-items: center; gap: 8px; }
         label { font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px; }
-        input[type="number"] { width: 50px; padding: 6px; border: 1px solid #ccd1d9; border-radius: 4px; text-align: center; }
+        input[type="number"] { width: 50px; padding: 6px; border: 1px solid #ccd1d9; border-radius: 4px; text-align: center; font-weight: bold; }
         input[type="color"] { width: 30px; height: 30px; padding: 0; border: none; border-radius: 4px; cursor: pointer; }
         
-        button {
-            padding: 8px 16px; font-weight: bold; border: none; border-radius: 4px;
-            cursor: pointer; transition: 0.2s;
-        }
+        button { padding: 8px 16px; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; transition: 0.2s; }
         button:active { transform: scale(0.98); }
         #playBtn { background: #2ecc71; color: white; }
         #playBtn:hover { background: #27ae60; }
@@ -36,20 +35,28 @@
         #exportBtn:hover { background: #8e44ad; }
         #exportBtn:disabled { background: #bdc3c7; cursor: not-allowed; }
         
-        .timeline-container {
-            display: flex; align-items: center; gap: 10px; margin-left: auto;
-            background: #edf1f5; padding: 6px 18px; border-radius: 20px;
-        }
+        .timeline-container { display: flex; align-items: center; gap: 10px; margin-left: auto; background: #edf1f5; padding: 6px 18px; border-radius: 20px; }
         input[type="range"] { width: 200px; cursor: pointer; }
         #frameDisplay { font-weight: bold; color: #2c3e50; min-width: 28px; text-align: right; }
+        
+        /* 경기장 캔버스 */
         #pitch-wrapper { text-align: center; }
-        canvas {
-            background: #27ae60; display: inline-block; border-radius: 8px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15); cursor: default;
+        canvas { background: #27ae60; display: inline-block; border-radius: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
+        
+        /* 하단 키프레임 에디터 패널 */
+        #editor-panel { 
+            max-width: 910px; margin: 15px auto; background: white; padding: 20px; 
+            border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); min-height: 80px; 
         }
-        .instructions {
-            text-align: center; color: #7f8c8d; margin-top: 15px; font-size: 14px; line-height: 1.6;
+        .kf-row { 
+            display: flex; gap: 10px; align-items: center; background: #f8f9fa; 
+            padding: 8px 12px; border-radius: 6px; border: 1px solid #e9ecef; margin-bottom: 8px; 
         }
+        .kf-input { width: 60px !important; font-weight: bold; color: #d35400; }
+        .btnDeleteKf { background: #e74c3c; color: white; padding: 4px 8px; font-size: 12px; border-radius: 4px; }
+        .btnDeleteKf:hover { background: #c0392b; }
+        #btnAutoSpeed { background: #f39c12; color: white; }
+        #btnAutoSpeed:hover { background: #e67e22; }
     </style>
 </head>
 <body>
@@ -58,7 +65,7 @@
 
 <div id="controls">
     <div class="control-group">
-        <span><strong>팀 색상 및 배치:</strong></span>
+        <span><strong>팀/배치:</strong></span>
         <input type="color" id="homeColor" value="#e74c3c">
         <label><input type="radio" name="type" value="home" checked> 홈</label>
         
@@ -68,19 +75,19 @@
         <label style="margin-left: 15px;"><input type="radio" name="type" value="ball"> ◯ 공</label>
     </div>
     
-    <div class="control-group">
+    <div class="control-group" style="margin-left: 10px;">
         <label for="numInput"><strong>등번호:</strong></label>
         <input type="number" id="numInput" value="1" min="1" max="99">
     </div>
     
-    <div class="control-group" style="margin-left: 5px;">
+    <div class="control-group" style="margin-left: 10px;">
         <button id="playBtn">▶ 재생 (Play)</button>
         <button id="resetBtn">초기화</button>
         <button id="exportBtn">📷 GIF 추출</button>
     </div>
     
     <div class="timeline-container">
-        <strong>타임라인:</strong>
+        <strong>타임라인:</strong> 
         <input type="range" id="timeline" min="0" max="200" value="0">
         <span id="frameDisplay">0</span> / 200
     </div>
@@ -90,9 +97,11 @@
     <canvas id="pitch" width="800" height="500"></canvas>
 </div>
 
-<div class="instructions">
-    <strong>💡 추가된 기능:</strong> 라디오 버튼 옆의 <strong>네모난 색상 박스</strong>를 클릭해 유니폼 색상을 변경해 보세요.<br>
-    경로 지정 완료 후 <strong>[📷 GIF 추출]</strong> 버튼을 누르면 잠시 렌더링 후 자동으로 움짤이 다운로드됩니다.
+<div id="editor-panel">
+    <h3 style="margin-top:0; font-size:16px; color:#2c3e50;">⏱ 타임라인 상세 편집기</h3>
+    <div id="kf-list">
+        <span style="color:#7f8c8d; font-size:14px;">경기장 위의 객체(선수 또는 공)를 클릭하면, 각 이동 지점의 프레임을 직접 수정하거나 등속도로 자동 정렬할 수 있습니다.</span>
+    </div>
 </div>
 
 <script>
@@ -104,46 +113,37 @@ const exportBtn = document.getElementById('exportBtn');
 const timeline = document.getElementById('timeline');
 const frameDisplay = document.getElementById('frameDisplay');
 const numInput = document.getElementById('numInput');
-
 const homeColorInput = document.getElementById('homeColor');
 const awayColorInput = document.getElementById('awayColor');
+const kfList = document.getElementById('kf-list');
 
 let entities = [];
 let isPlaying = false;
 let maxFrames = 200;
 let currentFrame = 0;
 let draggedEntity = null;
+let selectedEntity = null; // 클릭해서 선택된 객체 추적용 변수
 let animationTimer = null;
 
-// 색상 변경 시 즉시 화면 업데이트
-homeColorInput.addEventListener('input', render);
-awayColorInput.addEventListener('input', render);
+// 색상 변경 이벤트
+homeColorInput.addEventListener('input', () => render(false));
+awayColorInput.addEventListener('input', () => render(false));
 
+// 축구장 그리기 로직
 function drawPitch() {
-    // GIF 렌더링을 위해 CSS 배경이 아닌 실제 Canvas에 잔디색 채우기
-    ctx.fillStyle = "#27ae60";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
+    ctx.fillStyle = "#27ae60"; ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "#2ecc71";
-    for(let i = 40; i < 720; i += 80) {
-        ctx.fillRect(i, 20, 40, 460);
-    }
-
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.7)";
-    ctx.lineWidth = 2;
+    for(let i = 40; i < 720; i += 80) ctx.fillRect(i, 20, 40, 460);
     
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.7)"; ctx.lineWidth = 2;
     ctx.strokeRect(40, 20, 720, 460);
-    
     ctx.beginPath(); ctx.moveTo(400, 20); ctx.lineTo(400, 480); ctx.stroke();
     
     ctx.beginPath(); ctx.arc(400, 250, 70, 0, Math.PI * 2); ctx.stroke();
     ctx.beginPath(); ctx.arc(400, 250, 4, 0, Math.PI * 2); ctx.fillStyle = "white"; ctx.fill();
     
-    ctx.strokeRect(40, 100, 120, 300);
-    ctx.strokeRect(640, 100, 120, 300);
-    
-    ctx.strokeRect(40, 180, 40, 140);
-    ctx.strokeRect(720, 180, 40, 140);
+    ctx.strokeRect(40, 100, 120, 300); ctx.strokeRect(640, 100, 120, 300);
+    ctx.strokeRect(40, 180, 40, 140); ctx.strokeRect(720, 180, 40, 140);
     
     ctx.beginPath(); ctx.arc(130, 250, 3, 0, Math.PI * 2); ctx.fill();
     ctx.beginPath(); ctx.arc(670, 250, 3, 0, Math.PI * 2); ctx.fill();
@@ -156,6 +156,7 @@ function drawPitch() {
     ctx.strokeRect(10, 210, 30, 80); ctx.strokeRect(760, 210, 30, 80);
 }
 
+// 키프레임 보간 좌표 계산
 function getInterpolatedPos(entity, frame) {
     const keyframes = Object.keys(entity.keyframes).map(Number).sort((a,b)=>a-b);
     if (keyframes.length === 0) return null;
@@ -177,25 +178,34 @@ function getInterpolatedPos(entity, frame) {
     return { x: p1.x + (p2.x - p1.x) * ratio, y: p1.y + (p2.y - p1.y) * ratio };
 }
 
+// 전체 화면 렌더링
 function render(hidePaths = false) {
     drawPitch();
     
-    // 경로선 그리기 (GIF 추출 중에는 숨길 수 있도록 hidePaths 변수 추가)
     if (!hidePaths) {
         entities.forEach(entity => {
             const keyframes = Object.keys(entity.keyframes).map(Number).sort((a,b)=>a-b);
             if (keyframes.length > 1) {
                 ctx.beginPath();
                 ctx.strokeStyle = entity.isBall ? "rgba(255,255,255,0.5)" : "rgba(241,196,15,0.6)";
-                ctx.setLineDash(entity.isBall ? [] : [5, 5]);
+                ctx.setLineDash(entity.isBall ? [] : [5, 5]); 
                 ctx.lineWidth = entity.isBall ? 1.5 : 2;
                 
-                const firstPos = entity.keyframes[keyframes[0]];
-                ctx.moveTo(firstPos.x, firstPos.y);
+                ctx.moveTo(entity.keyframes[keyframes[0]].x, entity.keyframes[keyframes[0]].y);
                 for (let i = 1; i < keyframes.length; i++) {
                     ctx.lineTo(entity.keyframes[keyframes[i]].x, entity.keyframes[keyframes[i]].y);
                 }
                 ctx.stroke(); ctx.setLineDash([]); 
+                
+                // 선택된 객체의 키프레임 지점(노드) 강조 표시
+                if (entity === selectedEntity) {
+                    for (let i = 0; i < keyframes.length; i++) {
+                        ctx.beginPath(); 
+                        ctx.arc(entity.keyframes[keyframes[i]].x, entity.keyframes[keyframes[i]].y, 4, 0, Math.PI*2);
+                        ctx.fillStyle = "#f39c12"; ctx.fill(); 
+                        ctx.strokeStyle = "white"; ctx.lineWidth = 1; ctx.stroke();
+                    }
+                }
             }
         });
     }
@@ -204,6 +214,14 @@ function render(hidePaths = false) {
         const pos = getInterpolatedPos(entity, currentFrame);
         if (!pos) return;
         
+        // 선택된 객체 하이라이트 (노란색 점선 링)
+        if (entity === selectedEntity && !hidePaths) {
+            ctx.beginPath(); 
+            ctx.arc(pos.x, pos.y, entity.isBall ? 11 : 18, 0, Math.PI * 2);
+            ctx.strokeStyle = "#f1c40f"; ctx.lineWidth = 2; ctx.setLineDash([4, 4]); 
+            ctx.stroke(); ctx.setLineDash([]);
+        }
+
         ctx.beginPath();
         if (entity.isBall) {
             ctx.arc(pos.x, pos.y, 7, 0, Math.PI * 2);
@@ -213,7 +231,6 @@ function render(hidePaths = false) {
             ctx.fillStyle = "#333"; ctx.fill();
         } else {
             ctx.arc(pos.x, pos.y, 14, 0, Math.PI * 2);
-            // 사용자 지정 색상 적용
             ctx.fillStyle = entity.type === 'home' ? homeColorInput.value : awayColorInput.value;
             ctx.fill();
             ctx.strokeStyle = "white"; ctx.lineWidth = 2.5; ctx.stroke();
@@ -225,131 +242,25 @@ function render(hidePaths = false) {
     });
 }
 
-// 상호작용 이벤트 
-canvas.addEventListener('mousedown', (e) => {
-    if (isPlaying) return;
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left, y = e.clientY - rect.top;
-    
-    for (let entity of entities) {
-        const pos = getInterpolatedPos(entity, currentFrame);
-        if (pos && Math.hypot(pos.x - x, pos.y - y) <= (entity.isBall ? 7 : 14) + 6) {
-            draggedEntity = entity; canvas.style.cursor = 'grabbing'; return;
-        }
+// 📌 핵심: 키프레임 에디터 UI 동기화 함수
+function updateEditor() {
+    if(!selectedEntity) {
+        kfList.innerHTML = '<span style="color:#7f8c8d; font-size:14px;">경기장 위의 객체(선수 또는 공)를 클릭하면, 각 이동 지점의 프레임을 직접 수정하거나 등속도로 자동 정렬할 수 있습니다.</span>';
+        return;
     }
     
-    const selectedType = document.querySelector('input[name="type"]:checked').value;
-    const isBall = selectedType === 'ball';
+    const name = selectedEntity.isBall ? '⚽ 공' : (selectedEntity.type === 'home' ? '🔴 홈팀' : '🔵 어웨이팀') + ' #' + selectedEntity.number;
     
-    const newEntity = {
-        isBall: isBall, type: selectedType,
-        number: isBall ? null : numInput.value,
-        keyframes: { [currentFrame]: { x, y } }
-    };
+    let html = `
+        <div style="width:100%; margin-bottom:12px; display:flex; align-items:center;">
+            <strong>선택됨: ${name}</strong>
+            <button id="btnAutoSpeed" style="margin-left:15px;">✨ 구간 등속도 자동 맞춤</button>
+            <span style="font-size:12px; color:#7f8c8d; margin-left:10px;">(경로 거리에 비례하여 사이 프레임을 자동으로 재분배합니다)</span>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:10px;">
+    `;
     
-    if (!isBall) numInput.value = parseInt(numInput.value) + 1;
-    entities.push(newEntity); render();
-});
-
-canvas.addEventListener('mousemove', (e) => {
-    if (isPlaying) return;
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left, y = e.clientY - rect.top;
-
-    if (draggedEntity) {
-        draggedEntity.keyframes[currentFrame] = { x, y }; render();
-    } else {
-        let hover = false;
-        for (let entity of entities) {
-            const pos = getInterpolatedPos(entity, currentFrame);
-            if (pos && Math.hypot(pos.x - x, pos.y - y) <= (entity.isBall ? 7 : 14) + 6) {
-                hover = true; break;
-            }
-        }
-        canvas.style.cursor = hover ? 'grab' : 'default';
-    }
-});
-
-canvas.addEventListener('mouseup', () => { draggedEntity = null; if (!isPlaying) canvas.style.cursor = 'default'; });
-timeline.addEventListener('input', (e) => {
-    if (isPlaying) return; currentFrame = parseInt(e.target.value);
-    frameDisplay.textContent = currentFrame; render();
-});
-
-function advanceFrame() {
-    if (!isPlaying) return;
-    if (currentFrame < maxFrames) {
-        currentFrame++; timeline.value = currentFrame; frameDisplay.textContent = currentFrame;
-        render(); animationTimer = setTimeout(advanceFrame, 20); 
-    } else {
-        isPlaying = false; playBtn.textContent = "▶ 재생 (Play)";
-    }
-}
-
-playBtn.addEventListener('click', () => {
-    if (isPlaying) {
-        isPlaying = false; clearTimeout(animationTimer); playBtn.textContent = "▶ 재생 (Play)";
-    } else {
-        isPlaying = true; if (currentFrame >= maxFrames) currentFrame = 0;
-        playBtn.textContent = "⏸ 일시정지"; advanceFrame();
-    }
-});
-
-resetBtn.addEventListener('click', () => {
-    isPlaying = false; clearTimeout(animationTimer); playBtn.textContent = "▶ 재생 (Play)";
-    entities = []; currentFrame = 0; timeline.value = 0; frameDisplay.textContent = 0; numInput.value = 1; render();
-});
-
-// GIF 추출 (인코딩) 로직
-exportBtn.addEventListener('click', () => {
-    if (isPlaying) playBtn.click(); // 재생 중이면 정지
-    
-    // 버튼 상태 변경
-    exportBtn.textContent = "⏳ 움짤 생성 중...";
-    exportBtn.disabled = true;
-    
-    // 외부 CDN 워커의 CORS(교차 출처) 제약을 우회하기 위해 Blob 스크립트 생성
-    const workerBlob = new Blob([`importScripts('https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js');`], { type: 'application/javascript' });
-    
-    const gif = new window.GIF({
-        workers: 2,
-        quality: 10,       // 화질 (낮을수록 고화질, 기본값 10)
-        width: canvas.width,
-        height: canvas.height,
-        workerScript: URL.createObjectURL(workerBlob)
-    });
-    
-    const savedFrame = currentFrame; // 현재 프레임 백업
-    
-    // 0프레임부터 끝까지 캡처 (2프레임 단위로 건너뛰어 GIF 용량/속도 최적화)
-    for (let f = 0; f <= maxFrames; f += 2) {
-        currentFrame = f;
-        render(true); // GIF에는 점선 경로를 표시하지 않음 (깔끔하게)
-        gif.addFrame(canvas, { copy: true, delay: 40 }); // 40ms = 25 FPS
-    }
-    
-    // GIF 변환 완료 시 다운로드 처리
-    gif.on('finished', function(blob) {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'football_tactics.gif'; // 다운로드될 파일명
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        
-        // UI 복구
-        currentFrame = savedFrame;
-        render();
-        exportBtn.textContent = "📷 GIF 추출";
-        exportBtn.disabled = false;
-    });
-    
-    gif.render(); // 인코딩 시작
-});
-
-render();
-</script>
-
-</body>
-</html>
+    const frames = Object.keys(selectedEntity.keyframes).map(Number).sort((a,b)=>a-b);
+    frames.forEach((f, idx) => {
+        html += `
+            <div class
